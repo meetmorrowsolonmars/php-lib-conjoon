@@ -102,7 +102,7 @@ class DefaultFolderIdToTypeMapper implements FolderIdToTypeMapper
 // +------------------
 // | INBOX
 // +------------------
-            case "[GOOGLE MAIL]/ALLE NACHRICHTEN":
+            case "POSTEINGANG":
             case "INBOX":
                 $type = MailFolder::TYPE_INBOX;
                 break;
@@ -111,9 +111,16 @@ class DefaultFolderIdToTypeMapper implements FolderIdToTypeMapper
 // | TRASH
 // +------------------
             case "[GOOGLE MAIL]/PAPIERKORB":
+            case "[GMAIL]/PAPIERKORB":
+            case "[GOOGLE MAIL]/TRASH":
+            case "[GMAIL]/TRASH":
             case "TRASH":
             case "JUNK-E-MAIL":
+            case "DELETED":
+            case "DELETED MESSAGES":
             case "GELÖSCHTE ELEMENTE":
+            case "GELÖSCHT":
+            case "PAPIERKORB":
             case "INBOX" . $delimiter . "TRASH":
             case "INBOX" . $delimiter . "PAPIERKORB":
             case "INBOX" . $delimiter . "DELETED ITEMS":
@@ -124,8 +131,13 @@ class DefaultFolderIdToTypeMapper implements FolderIdToTypeMapper
 // | DRAFT
 // +------------------
             case "[GOOGLE MAIL]/ENTWÜRFE":
+            case "[GMAIL]/ENTWÜRFE":
+            case "[GOOGLE MAIL]/DRAFTS":
+            case "[GMAIL]/DRAFTS":
             case "DRAFTS":
+            case "DRAFT":
             case "ENTWÜRFE":
+            case "ENTWURF":
             case "INBOX" . $delimiter . "DRAFTS":
                 $type = MailFolder::TYPE_DRAFT;
                 break;
@@ -134,8 +146,13 @@ class DefaultFolderIdToTypeMapper implements FolderIdToTypeMapper
 // | SENT
 // +------------------
             case "[GOOGLE MAIL]/GESENDET":
+            case "[GMAIL]/GESENDET":
+            case "[GOOGLE MAIL]/SENT":
+            case "[GMAIL]/SENT":
             case "GESENDETE ELEMENTE":
+            case "GESENDET":
             case "SENT":
+            case "SENT MESSAGES":
             case "INBOX" . $delimiter . "SENT":
             case "INBOX" . $delimiter . "SENT MESSAGES":
             case "INBOX" . $delimiter . "SENT ITEMS":
@@ -146,9 +163,13 @@ class DefaultFolderIdToTypeMapper implements FolderIdToTypeMapper
 // | JUNK
 // +------------------
             case "[GOOGLE MAIL]/SPAM":
+            case "[GMAIL]/SPAM":
             case "JUNK":
+            case "SPAM":
+            case "SPAMVERDACHT":
             case "INBOX" . $delimiter . "JUNK":
             case "INBOX" . $delimiter . "SPAM":
+            case "INBOX" . $delimiter . "SPAMVERDACHT":
                 $type = MailFolder::TYPE_JUNK;
                 break;
         }

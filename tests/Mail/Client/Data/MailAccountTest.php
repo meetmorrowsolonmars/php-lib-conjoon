@@ -31,6 +31,10 @@ namespace Tests\Conjoon\Mail\Client\Data;
 
 use BadMethodCallException;
 use Conjoon\Mail\Client\Data\MailAccount;
+use Conjoon\Mail\Client\Util\JsonApiStrategy;
+use Conjoon\Util\Arrayable;
+use Conjoon\Util\Jsonable;
+use Conjoon\Util\JsonStrategy;
 use Tests\TestCase;
 
 /**
@@ -40,7 +44,7 @@ use Tests\TestCase;
 class MailAccountTest extends TestCase
 {
     protected array $accountConfig = [
-        "id"               => "dev_sys_conjoon_org",
+        "id"              => "dev_sys_conjoon_org",
         "name"            => "conjoon developer",
         "from"            => ["name" => "John Smith", "address" => "dev@conjoon.org"],
         "replyTo"         => ["name" => "John Smith", "address" => "dev@conjoon.org"],
@@ -54,10 +58,21 @@ class MailAccountTest extends TestCase
         "outbox_port"     => 993,
         "outbox_user"     => "user",
         "outbox_password" => "password outbox",
-        "outbox_ssl"      => true,
+        "outbox_secure"   => "ssl",
         "root"            => ["[Gmail]"]
     ];
 
+
+    /**
+     * @return void
+     */
+    public function testInstance()
+    {
+        $account = new MailAccount($this->accountConfig);
+
+        $this->assertInstanceOf(Jsonable::class, $account);
+        $this->assertInstanceOf(Arrayable::class, $account);
+    }
 
     /**
      * magic methods
@@ -112,11 +127,37 @@ class MailAccountTest extends TestCase
      */
     public function testToArray()
     {
-
         $config = $this->accountConfig;
+        $config["type"] = "MailAccount";
 
         $account = new MailAccount($config);
 
-        $this->assertSame($config, $account->toArray());
+        $this->assertEquals($config, $account->toArray());
+    }
+
+
+    /**
+     * toArray()
+     */
+    public function testToJson()
+    {
+        $config = $this->accountConfig;
+        $config["type"] = "MailAccount";
+
+        $account = new MailAccount($config);
+
+        $this->assertEquals($config, $account->toJson());
+
+        $strategyMock =
+            $this->getMockBuilder(JsonStrategy::class)
+                 ->getMockForAbstractClass();
+
+        $strategyMock
+            ->expects($this->exactly(1))
+            ->method("toJson")
+            ->with($account)
+            ->willReturn($account->toArray());
+
+        $this->assertEquals($config, $account->toJson($strategyMock));
     }
 }

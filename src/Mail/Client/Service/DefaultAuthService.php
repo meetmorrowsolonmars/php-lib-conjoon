@@ -3,7 +3,7 @@
 /**
  * conjoon
  * php-lib-conjoon
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/php-lib-conjoon
+ * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/php-lib-conjoon
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,62 +27,38 @@
 
 declare(strict_types=1);
 
-namespace Conjoon\Mail\Client\Folder;
+namespace Conjoon\Mail\Client\Service;
 
-use Conjoon\Util\AbstractList;
-use Conjoon\Util\Jsonable;
-use Conjoon\Util\JsonStrategy;
+use Conjoon\Mail\Client\Data\MailAccount;
+use Horde_Imap_Client_Exception;
+use Horde_Imap_Client_Socket;
 
 /**
- * Class MailFolderList organizes a list of ListMailFolders.
- *
- * @example
- *
- *    $list = new MailFolderChildList();
- *
- *    $mailFolder = new MailFolder(
- *      new FolderKey("dev", "INBOX"), ["name" => "INBOX", "unreadCount" => 23]
- *    );
- *    $list[] = $listMailFolder;
- *
- *    foreach ($list as $key => $mItem) {
- *        // iterating over the item
- *    }
- *
- * @package Conjoon\Mail\Client\Folder
+ * Default AuthService-implementation.
  */
-class MailFolderChildList extends AbstractList implements Jsonable
+class DefaultAuthService implements AuthService
 {
-// -------------------------
-//  AbstractList
-// -------------------------
-
     /**
      * @inheritdoc
      */
-    public function getEntityType(): string
-    {
-        return MailFolder::class;
-    }
-
-
-// -------------------------
-//  Jsonable
-// -------------------------
-
-    /**
-     * @inheritdoc
-     */
-    public function toJson(JsonStrategy $strategy = null): array
+    public function authenticate(MailAccount $mailAccount): bool
     {
 
-        $data = [];
+        $connection = new Horde_Imap_Client_Socket(array(
+            'username' => $mailAccount->getInboxUser(),
+            'password' => $mailAccount->getInboxPassword(),
+            'hostspec' => $mailAccount->getInboxAddress(),
+            'port' => $mailAccount->getInboxPort(),
+            'secure' => $mailAccount->getInboxSsl() ? 'ssl' : null
+        ));
 
-        foreach ($this->data as $mailFolder) {
-            $data[] = $mailFolder->toJson();
+        try {
+            $connection->login();
+        } catch (Horde_Imap_Client_Exception $e) {
+            //authentication most likely failed.
+            return false;
         }
 
-
-        return $data;
+        return true;
     }
 }

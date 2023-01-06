@@ -30,6 +30,10 @@ declare(strict_types=1);
 namespace Conjoon\Mail\Client\Data;
 
 use BadMethodCallException;
+use Conjoon\Mail\Client\Util\JsonApiStrategy;
+use Conjoon\Util\Arrayable;
+use Conjoon\Util\Jsonable;
+use Conjoon\Util\JsonStrategy;
 
 /**
  * Class MailAccount models account information for a mail server.
@@ -51,11 +55,11 @@ use BadMethodCallException;
  *        "outbox_port"     => 993,
  *        "outbox_user"     => "outboxuser",
  *        "outbox_password" => "outboxpassword',
- *        'outbox_ssl'      => true,
+ *        'outbox_secure'   => "tls",
  *        'root'            => "INBOX"
  *    ]);
  *
- *    $account->getOutboxSsl(); // true
+ *    $account->getOutboxSecure(); // true
  *    $account->getInboxPort(); // 993
  *    $account->getReplyTo();   // ['name' => 'John Smith', 'address' => 'dev@conjoon.org'],
  *
@@ -77,12 +81,12 @@ use BadMethodCallException;
  * @method bool getInboxSsl()
  * @method string getOutboxAddress()
  * @method int getOutboxPort()
- * @method bool getOutboxSsl()
+ * @method string getOutboxSecure()
  * @method array getRoot()
  *
  * @noinspection SpellCheckingInspection
  */
-class MailAccount
+class MailAccount implements Jsonable, Arrayable
 {
     /**
      * @var string
@@ -155,9 +159,9 @@ class MailAccount
     protected string $outbox_password;
 
     /**
-     * @var boolean
+     * @var string
      */
-    protected bool $outbox_ssl;
+    protected string $outbox_secure;
 
     /**
      * @var array
@@ -221,6 +225,7 @@ class MailAccount
     {
         return [
             "id" => $this->getId(),
+            "type" => "MailAccount",
             "name" => $this->getName(),
             "from" => $this->getFrom(),
             "replyTo" => $this->getReplyTo(),
@@ -234,8 +239,16 @@ class MailAccount
             "outbox_port" => $this->getOutboxPort(),
             "outbox_user" => $this->getOutboxUser(),
             "outbox_password" => $this->getOutboxPassword(),
-            "outbox_ssl" => $this->getOutboxSsl(),
+            "outbox_secure" => $this->getOutboxSecure(),
             "root" => $this->getRoot()
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toJson(JsonStrategy $strategy = null): array
+    {
+        return $strategy ? $strategy->toJson($this) : $this->toArray();
     }
 }

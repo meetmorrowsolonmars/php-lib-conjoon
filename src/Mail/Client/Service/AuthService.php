@@ -3,7 +3,7 @@
 /**
  * conjoon
  * php-lib-conjoon
- * Copyright (C) 2019-2022 Thorsten Suckow-Homberg https://github.com/conjoon/php-lib-conjoon
+ * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/conjoon/php-lib-conjoon
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,23 +27,25 @@
 
 declare(strict_types=1);
 
-namespace Conjoon\Util;
+namespace Conjoon\Mail\Client\Service;
+
+use Conjoon\Mail\Client\Data\MailAccount;
 
 /**
- * Interface Jsonable
- * @package Conjoon\Util
+ * AuthService contract.
+ *
  */
-interface Jsonable
+interface AuthService
 {
     /**
-     * Returns a JSON representation of this instance.
-     * Implementing APIs are advised to process associations related to this
-     * instance accordingly to return a proper and valid JSONed data structure.
+     * Uses the information found in the submitted MailAccount for authentication.
+     * The "username" and "password" will be used for establishing a connection to
+     * inboxAddress:inboxPort as configured in the MailAccount.
      *
-     * @param JsonStrategy|null $strategy Allows to pass the strategy used for
-     * transforming **this** into JSON
+     * @param MailAccount $mailAccount
      *
-     * @return array
+     * @return bool true if a connection given the credentials found in the MailAccount
+     * could be established, otherwise false
      */
-    public function toJson(JsonStrategy $strategy = null): array;
+    public function authenticate(MailAccount $mailAccount): bool;
 }

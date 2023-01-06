@@ -621,6 +621,15 @@ class HordeClient implements MailClient
      */
     public function sendMessageDraft(MessageKey $messageKey): bool
     {
+        return $this->sendMessageDraftWithHeaders($messageKey, []);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function sendMessageDraftWithHeaders(MessageKey $messageKey, array $customHeaders): bool
+    {
         try {
             $client = $this->connect($messageKey);
             $account = $this->getMailAccount($messageKey);
@@ -648,13 +657,18 @@ class HordeClient implements MailClient
             $part = Horde_Mime_Part::parseMessage($target);
             $headers = Horde_Mime_Headers::parseHeaders($target);
 
-            // Check for X-CN-DRAFT-INFO...
+            // check for X-CN-DRAFT-INFO...
             $xCnDraftInfo = $headers->getHeader("X-CN-DRAFT-INFO");
             $xCnDraftInfo = $xCnDraftInfo ? $xCnDraftInfo->value_single : null;
             // ...delete the header...
             $headers->removeHeader("X-CN-DRAFT-INFO");
 
+            // add custom headers
+            foreach ($customHeaders as $key => $value) {
+                $headers->addHeader(strtoupper($key), $value);
+            }
 
+            // create mail and send it
             $mail = new Horde_Mime_Mail($headers);
             $mail->setBasePart($part);
 

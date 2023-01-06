@@ -169,6 +169,17 @@ interface MessageItemService
 
 
     /**
+     * Sends the MessageItemDraft with the specified $messageKey. The message will not
+     * be send if it is not a DRAFT message.
+     *
+     * @param MessageKey $messageKey
+     * @param array<string, string> $customHeaders
+     * @return bool true if sending was successfully, otherwise false
+     */
+    public function sendMessageDraftWithHeaders(MessageKey $messageKey, array $customHeaders): bool;
+
+
+    /**
      * Returns the total number of messages in the specified $mailFolderId for the specified $account;
      *
      * @param FolderKey $folderKey

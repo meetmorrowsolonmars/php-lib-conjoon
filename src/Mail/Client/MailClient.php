@@ -112,6 +112,19 @@ interface MailClient
 
 
     /**
+     * Tries to send the specified MessageItemDraft found under $key.
+     *
+     * @param MessageKey $messageKey
+     * @param array<string, string> $customHeaders
+     * @return bool true if sending was successful, otherwise false.
+     *
+     * @throws MailClientException if any exception occurs, or if the message found
+     * is not a Draft-Message.
+     */
+    public function sendMessageDraftWithHeaders(MessageKey $messageKey, array $customHeaders): bool;
+
+
+    /**
      * Returns the specified MessageBody for the submitted arguments.
      *
      * @param MessageKey $messageKey

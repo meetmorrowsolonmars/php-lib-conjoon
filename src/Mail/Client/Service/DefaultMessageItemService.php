@@ -239,7 +239,7 @@ class DefaultMessageItemService implements MessageItemService
         $result = false;
 
         try {
-            $result = $this->mailClient->sendMessageDraft($messageKey);
+            $result = $this->mailClient->sendMessageDraftWithHeaders($messageKey, []);
         } catch (MailClientException $e) {
             // intentionally left empty
         }
@@ -247,6 +247,21 @@ class DefaultMessageItemService implements MessageItemService
         return $result;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function sendMessageDraftWithHeaders(MessageKey $messageKey, array $customHeaders): bool
+    {
+        $result = false;
+
+        try {
+            $result = $this->mailClient->sendMessageDraftWithHeaders($messageKey, $customHeaders);
+        } catch (MailClientException $e) {
+            // intentionally left empty
+        }
+
+        return $result;
+    }
 
     /**
      * @inheritdoc

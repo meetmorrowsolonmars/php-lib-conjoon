@@ -129,7 +129,7 @@ class ListMessageItem extends MessageItem
             'cc' => $this->getCc() ? $this->getCc()->toJson() : null,
             'bcc' => $this->getBcc() ? $this->getBcc()->toJson() : null,
             'replyTo' => $this->getReplyTo() ? $this->getReplyTo()->toJson() : null,
-            'headers' => $this->getHeaders() ? $this->getHeaders()->toJson() : null
+            'headers' => $this->getHeaders() ? $this->getHeaders() : null
         ]);
 
         return $this->buildJson($data);

@@ -1109,7 +1109,7 @@ class HordeClient implements MailClient
             $headers = [];
 
             foreach ($options["headers"] as $key) {
-                $header = strval($key);
+                $header = $key . ":";
                 $value = $item->getHeaders($header);
 
                 if (strpos($value, $header) !== 0) {

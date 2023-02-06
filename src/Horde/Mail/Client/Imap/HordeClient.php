@@ -29,9 +29,6 @@ declare(strict_types=1);
 
 namespace Conjoon\Horde\Mail\Client\Imap;
 
-use Conjoon\Mail\Client\Attachment\FileAttachment;
-use Conjoon\Mail\Client\Attachment\FileAttachmentList;
-use Conjoon\Mail\Client\Data\CompoundKey\AttachmentKey;
 use Conjoon\Mail\Client\Data\CompoundKey\CompoundKey;
 use Conjoon\Mail\Client\Data\CompoundKey\FolderKey;
 use Conjoon\Mail\Client\Data\CompoundKey\MessageKey;
@@ -883,6 +880,9 @@ class HordeClient implements MailClient
 
         $start = isset($options["start"]) ? intval($options["start"]) : -1;
         $limit = isset($options["limit"]) ? intval($options["limit"]) : -1;
+        $headers = isset($options["headers"]) && is_array($options["headers"])
+            ? array_map(fn($i) => strval($i), $options["headers"])
+            : [];
 
         if ($start >= 0 && $limit > 0) {
             $rangeList = new Horde_Imap_Client_Ids();
@@ -906,6 +906,10 @@ class HordeClient implements MailClient
 
         $fetchQuery->headers("ContentType", ["Content-Type"], ["peek" => true]);
         $fetchQuery->headers("References", ["References"], ["peek" => true]);
+
+        foreach ($headers as $header) {
+            $fetchQuery->headers($header, $header, ["peek" => true]);
+        }
 
         $fetchResult = $client->fetch($mailFolderId, $fetchQuery, ['ids' => $rangeList]);
 
@@ -976,6 +980,7 @@ class HordeClient implements MailClient
         array $options
     ): MessageItemList {
 
+        // TODO: extract headers from items
         $messageItems = new MessageItemList();
 
         $attributes = $options["attributes"] ?? [];

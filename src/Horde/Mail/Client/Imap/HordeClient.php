@@ -908,7 +908,7 @@ class HordeClient implements MailClient
         $fetchQuery->headers("References", ["References"], ["peek" => true]);
 
         foreach ($headers as $header) {
-            $fetchQuery->headers($header, $header, ["peek" => true]);
+            $fetchQuery->headers($header, [$header], ["peek" => true]);
         }
 
         $fetchResult = $client->fetch($mailFolderId, $fetchQuery, ['ids' => $rangeList]);
@@ -1104,6 +1104,24 @@ class HordeClient implements MailClient
         $wants("references") && $data["references"] = $this->getMessageIdStringFromReferencesHeaderValue(
             $item->getHeaders("References")
         );
+
+        if (isset($options["headers"]) && is_array($options["headers"])) {
+            $headers = [];
+
+            foreach ($options["headers"] as $key) {
+                $header = strval($key);
+                $value = $item->getHeaders($header);
+
+                if (strpos($value, $header) !== 0) {
+                    continue;
+                }
+
+                $value = trim(substr($value, strlen($header)));
+                $headers[$header] = $value;
+            }
+
+            $data["headers"] = $headers;
+        }
 
 
         $contentData = [];

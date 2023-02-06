@@ -30,8 +30,6 @@ declare(strict_types=1);
 namespace Conjoon\Mail\Client\Message;
 
 use Conjoon\Mail\Client\Data\CompoundKey\MessageKey;
-use Conjoon\Mail\Client\Data\MailAddress;
-use Conjoon\Mail\Client\Data\MailAddressList;
 use Conjoon\Util\JsonStrategy;
 
 /**
@@ -66,6 +64,7 @@ use Conjoon\Util\JsonStrategy;
 class ListMessageItem extends MessageItem
 {
     use DraftTrait;
+    use HeadersTrait;
 
     /**
      * @var MessagePart|null
@@ -125,10 +124,12 @@ class ListMessageItem extends MessageItem
             $data["previewText"] = $this->getMessagePart()->getContents();
         }
 
+        // TODO: here maybe not correct
         $data = array_merge($data, [
             'cc' => $this->getCc() ? $this->getCc()->toJson() : null,
             'bcc' => $this->getBcc() ? $this->getBcc()->toJson() : null,
-            'replyTo' => $this->getReplyTo() ? $this->getReplyTo()->toJson() : null
+            'replyTo' => $this->getReplyTo() ? $this->getReplyTo()->toJson() : null,
+            'headers' => $this->getHeaders() ? $this->getHeaders()->toJson() : null
         ]);
 
         return $this->buildJson($data);
